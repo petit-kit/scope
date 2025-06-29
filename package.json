@@ -1,0 +1,45 @@
+{
+  "name": "@petit-kit/scope",
+  "homepage": "https://github.com/petit-kit/scope",
+  "bugs": {
+    "url": "https://github.com/petit-kit/scope/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petit-kit/scope"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "@petitssoldats",
+    "email": "hello@nicolasforestier.dev",
+    "url": "https://nicolasforestier.dev"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/petitssoldats"
+  },
+  "version": "0.0.01",
+  "type": "module",
+  "private": false,
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup --minify terser",
+    "prepublishOnly": "npm run build"
+  },
+  "description": "",
+  "devDependencies": {
+    "terser": "^5.40.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@petit-kit/utils": "^0.0.4"
+  }
+}

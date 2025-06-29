@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                          // Modern enough, supports async/await
+    "module": "ESNext",                          // Output ES modules
+    "moduleResolution": "Bundler",               // For modern bundlers (like Vite, Rollup, etc.)
+    "lib": ["ES2020", "DOM"],                    // If you're working in Node only, remove "DOM"
+    "declaration": true,                         // Emit .d.ts files
+    "declarationMap": true,                      // Map .d.ts to .ts for better debugging
+    "sourceMap": true,                           // Emit source maps
+    "outDir": "dist",                            // Output directory
+    "rootDir": "src",                            // Your source files
+    "strict": true,                              // Enable all strict type-checking options
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,                     // Enable default import interoperability
+    "skipLibCheck": true,                        // Speeds up compilation
+    "resolveJsonModule": true,                   // Import .json files
+    "isolatedModules": true,                     // Required by some build tools (like Vite)
+    "types": [],                                 // Avoids automatic injection of global types (like jest)
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/*.spec.ts"]
+}
