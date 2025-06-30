@@ -93,7 +93,7 @@ props: {
 Get a property value.
 
 #### `set(key: string, value: any, noReflect?: boolean)`
-Set a property value and trigger re-render.
+Set a property value and trigger re-render. The value can be a function that receives the previous value.
 
 #### `$(selector: string, context?: HTMLElement)`
 Query elements within the component.
@@ -123,6 +123,11 @@ Handles events listeners with automatic cleanup.
 this.plugins.on('button', 'click', (e) => {
   console.log('Button clicked');
 });
+
+// Add event listener with options
+this.plugins.on('button', 'click', (e) => {
+  console.log('Button clicked');
+}, { persist: true, passive: true });
 
 // Remove event listener
 this.plugins.off('button', 'click', callback);
@@ -171,10 +176,41 @@ const cancelRaf = this.plugins.raf((time) => {
   console.log('Animation frame:', time);
 }, 'myAnimation');
 
-// Cancel timers
+// Cancel specific timers
 this.plugins.clearInterval('myInterval');
 this.plugins.clearTimeout('myTimeout');
 this.plugins.clearRaf('myAnimation');
+
+// Clear all timers
+this.plugins.clearIntervals();
+this.plugins.clearTimeouts();
+this.plugins.clearRafs();
+```
+
+### InView Plugin
+
+Monitors element visibility using Intersection Observer.
+
+```javascript
+class MyComponent extends Component {
+  constructor() {
+    super({
+      plugins: [inView],
+      inView: {
+        inViewThreshold: 0.5,  // Optional: threshold for intersection
+        inViewElement: '.target' // Optional: specific element to observe
+      }
+    });
+  }
+
+  onInView(entry) {
+    console.log('Element is in view:', entry);
+  }
+
+  onOutView(entry) {
+    console.log('Element is out of view:', entry);
+  }
+}
 ```
 
 ## Advanced Examples
@@ -228,7 +264,7 @@ class CounterComponent extends Component {
 ### Component with Multiple Plugins
 
 ```javascript
-import Component, { time, fetch, events } from '@petit-kit/scope';
+import Component, { time, fetch, events, inView } from '@petit-kit/scope';
 
 class DataComponent extends Component {
   constructor() {
@@ -238,7 +274,7 @@ class DataComponent extends Component {
         data: { type: 'object', default: {} },
         loading: { type: 'boolean', default: false }
       },
-      plugins: [time, fetch, events]
+      plugins: [time, fetch, events, inView]
     });
   }
 
@@ -264,6 +300,10 @@ class DataComponent extends Component {
     }
   }
 
+  onInView(entry) {
+    console.log('Component is visible:', entry.isIntersecting);
+  }
+
   render(props) {
     if (props.loading) {
       return '<div>Loading...</div>';
@@ -273,6 +313,36 @@ class DataComponent extends Component {
       <div>
         <h2>Data</h2>
         <pre>${JSON.stringify(props.data, null, 2)}</pre>
+      </div>
+    `;
+  }
+}
+```
+
+### Reactive Updates with Functions
+
+```javascript
+class CounterComponent extends Component {
+  constructor() {
+    super({
+      props: {
+        count: { type: 'number', default: 0 }
+      }
+    });
+  }
+
+  onMount() {
+    this.plugins.on('button', 'click', () => {
+      // Use function to update based on previous value
+      this.set('count', (prev) => prev + 1);
+    });
+  }
+
+  render(props) {
+    return `
+      <div>
+        <h2>Count: ${props.count}</h2>
+        <button>Increment</button>
       </div>
     `;
   }
