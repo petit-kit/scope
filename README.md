@@ -34,7 +34,7 @@ class MyComponent extends Component {
       :host { display: block; padding: 1rem; }
       button { margin: 0.5rem; }
     `,
-      plugins: [event],
+      plugins: [events],
     });
   }
 
@@ -114,9 +114,9 @@ Clean up the component and remove it from DOM.
 
 ## Plugins
 
-### Event Plugin
+### Events Plugin
 
-Handles event listeners with automatic cleanup.
+Handles events listeners with automatic cleanup.
 
 ```javascript
 // Add event listener
@@ -228,7 +228,7 @@ class CounterComponent extends Component {
 ### Component with Multiple Plugins
 
 ```javascript
-import Component, { time, fetch, event } from '@petit-kit/scope';
+import Component, { time, fetch, events } from '@petit-kit/scope';
 
 class DataComponent extends Component {
   constructor() {
@@ -238,7 +238,7 @@ class DataComponent extends Component {
         data: { type: 'object', default: {} },
         loading: { type: 'boolean', default: false }
       },
-      plugins: [time, fetch, event]
+      plugins: [time, fetch, events]
     });
   }
 

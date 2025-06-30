@@ -1,4 +1,4 @@
-const eventPlugin = (component: any) => {
+const eventsPlugin = (component: any) => {
   const refs = {
     _eventListeners: {} as Record<
       string,
@@ -115,4 +115,4 @@ const eventPlugin = (component: any) => {
   };
 };
 
-export default eventPlugin;
+export default eventsPlugin;

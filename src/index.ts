@@ -1,8 +1,7 @@
-import { forEach } from "@petit-kit/utils";
-
 import timePlugin from "./plugins/time";
 import fetchPlugin from "./plugins/fetch";
-import eventPlugin from "./plugins/events";
+import eventsPlugin from "./plugins/events";
+import inViewPlugin from "./plugins/inview";
 
 const castValue = (v: string, t: string) =>
   t === "number"
@@ -12,6 +11,22 @@ const castValue = (v: string, t: string) =>
     : t === "object"
     ? JSON.parse(v)
     : v;
+
+const inferType = (val: any): string =>
+  Array.isArray(val)
+    ? "array"
+    : val === null
+    ? "null"
+    : typeof val === "object"
+    ? "object"
+    : typeof val;
+
+const castProp = (prop: any) =>
+  prop.get
+    ? { ref: prop, type: inferType(prop.get()), default: prop.get() }
+    : prop.type != null
+    ? prop
+    : { default: prop, type: inferType(prop), ref: null };
 
 class Component extends HTMLElement {
   private _shadow: ShadowRoot | null = null;
@@ -25,13 +40,7 @@ class Component extends HTMLElement {
   props: any = {};
   plugins: any = {};
 
-  constructor({
-    shadow = false,
-    props = {},
-    styles = "",
-    stylesSheets = [],
-    plugins = [],
-  }: {
+  constructor(args: {
     shadow?: boolean;
     props?: any;
     styles?: string;
@@ -39,16 +48,24 @@ class Component extends HTMLElement {
     plugins?: any[];
   }) {
     super();
+    const {
+      shadow = false,
+      props = {},
+      styles = "",
+      stylesSheets = [],
+      plugins = [],
+    } = args;
 
     this._propsDefinitions = props;
     this._props = Object.keys(props).reduce((acc: any, key) => {
-      const { ref, type, default: d } = props[key];
+      this._propsDefinitions[key] = castProp(props[key]);
+      const { ref, type, default: d } = this._propsDefinitions[key];
       const val = ref?.get?.() ?? this.getAttribute(key);
 
       if (ref) {
-        const unsub = ref.subscribe?.((v: any) =>
-          this.set(key, v, false, false, true)
-        );
+        const unsub = ref.subscribe?.((v: any) => {
+          this.set(key, v, false, false, true);
+        }, false);
         props[key].ref.unsub = unsub;
       }
 
@@ -74,7 +91,7 @@ class Component extends HTMLElement {
     this._stylesSheets.forEach((sheet) => sheet(this));
 
     this.plugins = {};
-    this._plugins = plugins.map((plugin) => plugin(this));
+    this._plugins = plugins.map((plugin) => plugin(this, args));
   }
 
   static get observedAttributes() {
@@ -83,7 +100,6 @@ class Component extends HTMLElement {
 
   $(selector: string, context: HTMLElement = this.template): any {
     const result = context.querySelectorAll(selector);
-    console.log(selector, this.template);
     return result.length ? (result.length === 1 ? result[0] : result) : null;
   }
 
@@ -150,7 +166,7 @@ class Component extends HTMLElement {
 
   disconnectedCallback() {
     this.onUnmount();
-    forEach(this.props, (v: any) => v.ref && v.ref.unsub?.());
+    Object.values(this.props).forEach((v: any) => v.ref && v.ref.unsub?.());
     this._plugins.forEach((plugin) => plugin.onUnmount?.());
   }
 
@@ -168,4 +184,9 @@ class Component extends HTMLElement {
 }
 
 export default Component;
-export { timePlugin as time, fetchPlugin as fetch, eventPlugin as event };
+export {
+  timePlugin as time,
+  fetchPlugin as fetch,
+  eventsPlugin as events,
+  inViewPlugin as inView,
+};
