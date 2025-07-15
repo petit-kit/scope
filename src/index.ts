@@ -4,7 +4,6 @@ import timePlugin from "./plugins/time";
 import fetchPlugin from "./plugins/fetch";
 import eventsPlugin from "./plugins/events";
 import inViewPlugin from "./plugins/inview";
-import templatePlugin from "./plugins/template";
 
 /**
  * Casts a string value to a specified type.
@@ -66,7 +65,7 @@ class Component extends HTMLElement {
   private _styles: HTMLStyleElement | null = null;
   private _stylesSheets: Function[] = [];
   private _plugins: any[] = [];
-  private _children: Node[] = [];
+  private _children: Node | Node[] = [];
   private _batchRender: boolean = false;
   private _renderScheduled: boolean = false;
   mounted: boolean = false;
@@ -358,7 +357,7 @@ class Component extends HTMLElement {
    * @param children - The children nodes.
    * @returns The HTML string for the template.
    */
-  render(_props: any, children: any) {}
+  render(_props: any, _children: any) {}
 
   /**
    * Lifecycle: Called before the component is mounted.
@@ -389,5 +388,4 @@ export {
   fetchPlugin as fetch,
   eventsPlugin as events,
   inViewPlugin as inView,
-  templatePlugin as template,
 };
